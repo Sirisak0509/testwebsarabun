@@ -68,29 +68,6 @@
             z-index: 1;
         }
 
-        .connection-status {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 0.9em;
-            font-weight: 600;
-            z-index: 2;
-        }
-
-        .status-connected {
-            background: rgba(34, 197, 94, 0.2);
-            color: #059669;
-            border: 1px solid rgba(34, 197, 94, 0.3);
-        }
-
-        .status-disconnected {
-            background: rgba(239, 68, 68, 0.2);
-            color: #dc2626;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
         .main-content {
             display: grid;
             grid-template-columns: 1fr 1fr;
@@ -188,12 +165,6 @@
             box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
             position: relative;
             overflow: hidden;
-            width: 100%;
-        }
-
-        .btn:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
         }
 
         .btn::before {
@@ -207,12 +178,12 @@
             transition: left 0.5s;
         }
 
-        .btn:hover:not(:disabled) {
+        .btn:hover {
             transform: translateY(-3px);
             box-shadow: 0 12px 35px rgba(102, 126, 234, 0.5);
         }
 
-        .btn:hover:not(:disabled)::before {
+        .btn:hover::before {
             left: 100%;
         }
 
@@ -224,7 +195,6 @@
             background: linear-gradient(135deg, #ff6b6b 0%, #feca57 100%);
             margin-top: 20px;
             box-shadow: 0 8px 25px rgba(255, 107, 107, 0.4);
-            width: auto;
         }
 
         .result-section {
@@ -420,40 +390,6 @@
             display: inline-block;
         }
 
-        .loading {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #667eea;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 10px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .error-message {
-            background: #fee2e2;
-            color: #dc2626;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #fecaca;
-        }
-
-        .success-message {
-            background: #dcfce7;
-            color: #059669;
-            padding: 15px;
-            border-radius: 10px;
-            margin-bottom: 20px;
-            border: 1px solid #bbf7d0;
-        }
-
         @media (max-width: 768px) {
             .main-content {
                 grid-template-columns: 1fr;
@@ -478,35 +414,23 @@
                 flex-direction: column;
                 gap: 15px;
             }
-
-            .connection-status {
-                position: static;
-                display: inline-block;
-                margin-top: 10px;
-            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <div class="header">
-            <div class="connection-status" id="connectionStatus">
-                <span class="loading"></span>กำลังเชื่อมต่อ...
-            </div>
             <h1>🏛️ ระบบเลขทะเบียนหนังสือส่งออนไลน์</h1>
-            <p>ระบบจัดการเลขทะเบียนหนังสือราชการอัตโนมัติ - Firebase</p>
+            <p>ระบบจัดการเลขทะเบียนหนังสือราชการอัตโนมัติ</p>
         </div>
 
         <div class="main-content">
             <div class="form-section">
                 <h2>📝 ลงทะเบียนหนังสือใหม่</h2>
-                <div id="errorMessage" class="error-message hidden"></div>
-                <div id="successMessage" class="success-message hidden"></div>
-                
                 <form id="documentForm">
                     <div class="form-group">
-                        <label for="name" class="required">ชื่อผู้ขอ</label>
-                        <input type="text" id="name" name="name" required placeholder="กรอกชื่อผู้ขอ">
+                        <label for="requester" class="required">ชื่อผู้ขอ</label>
+                        <input type="text" id="requester" name="requester" required placeholder="กรอกชื่อผู้ขอ">
                     </div>
 
                     <div class="form-group">
@@ -514,9 +438,6 @@
                         <select id="from" name="from" required>
                             <option value="">-- เลือกผู้ส่ง --</option>
                             <option value="ผู้อำนวยการโรงเรียน">ผู้อำนวยการโรงเรียน</option>
-                            <option value="รองผู้อำนวยการโรงเรียน">รองผู้อำนวยการโรงเรียน</option>
-                            <option value="หัวหน้าฝ่ายวิชาการ">หัวหน้าฝ่ายวิชาการ</option>
-                            <option value="หัวหน้าฝ่ายบริหาร">หัวหน้าฝ่ายบริหาร</option>
                             <option value="อื่นๆ">อื่นๆ</option>
                         </select>
                     </div>
@@ -531,9 +452,6 @@
                         <select id="to" name="to" required>
                             <option value="">-- เลือกผู้รับ --</option>
                             <option value="ผู้อำนวยการสำนักงานเขตพื้นที่การศึกษา">ผู้อำนวยการสำนักงานเขตพื้นที่การศึกษา</option>
-                            <option value="สำนักงานศึกษาธิการจังหวัด">สำนักงานศึกษาธิการจังหวัด</option>
-                            <option value="กรมสามัญศึกษา">กรมสามัญศึกษา</option>
-                            <option value="กระทรวงศึกษาธิการ">กระทรวงศึกษาธิการ</option>
                             <option value="หน่วยงานอื่น">หน่วยงานอื่น</option>
                         </select>
                     </div>
@@ -544,8 +462,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label for="topic" class="required">เรื่อง</label>
-                        <input type="text" id="topic" name="topic" required placeholder="กรอกเรื่อง">
+                        <label for="subject" class="required">เรื่อง</label>
+                        <input type="text" id="subject" name="subject" required placeholder="กรอกเรื่อง">
                     </div>
 
                     <div class="form-group">
@@ -553,9 +471,7 @@
                         <textarea id="note" name="note" placeholder="หมายเหตุเพิ่มเติม (ถ้ามี)"></textarea>
                     </div>
 
-                    <button type="submit" class="btn" id="submitBtn">
-                        📋 ลงทะเบียนหนังสือ
-                    </button>
+                    <button type="submit" class="btn">📋 ลงทะเบียนหนังสือ</button>
                 </form>
             </div>
 
@@ -594,66 +510,13 @@
 
             <div id="historyTable">
                 <div class="empty-state">
-                    <p>กำลังโหลดข้อมูล...</p>
+                    <p>ยังไม่มีการลงทะเบียนเอกสาร</p>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Firebase SDK -->
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-firestore-compat.js"></script>
-
     <script>
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
-const firebaseConfig = {
-  apiKey: "AIzaSyBUIFEiQVI5b6dFRTygYlfXdBzxChz2iSY",
-  authDomain: "sarabunsrtest.firebaseapp.com",
-  projectId: "sarabunsrtest",
-  storageBucket: "sarabunsrtest.firebasestorage.app",
-  messagingSenderId: "134410217607",
-  appId: "1:134410217607:web:596f55a3693baec45eb022",
-  measurementId: "G-VE50744Q87"
-};
-
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
-
-        // Initialize Firebase
-        let db;
-        let isConnected = false;
-
-        try {
-            firebase.initializeApp(firebaseConfig);
-            db = firebase.firestore();
-            
-            // Test connection
-            db.collection('documents').limit(1).get().then(() => {
-                isConnected = true;
-                updateConnectionStatus();
-                loadDocuments();
-            }).catch((error) => {
-                console.error('Firebase connection error:', error);
-                updateConnectionStatus();
-                // Fallback to localStorage
-                loadFromLocalStorage();
-            });
-        } catch (error) {
-            console.error('Firebase initialization error:', error);
-            updateConnectionStatus();
-            // Fallback to localStorage
-            loadFromLocalStorage();
-        }
-
-        // Global variables
         let documentHistory = [];
         let documentCounter = 1;
         const currentYear = 2568;
@@ -661,99 +524,19 @@ const analytics = getAnalytics(app);
         // Initialize current year display
         document.getElementById('currentYear').textContent = currentYear;
 
-        // Update connection status
-        function updateConnectionStatus() {
-            const statusEl = document.getElementById('connectionStatus');
-            if (isConnected) {
-                statusEl.className = 'connection-status status-connected';
-                statusEl.innerHTML = '🟢 เชื่อมต่อ Firebase';
-            } else {
-                statusEl.className = 'connection-status status-disconnected';
-                statusEl.innerHTML = '🔴 ใช้งานแบบออฟไลน์';
-            }
-        }
-
-        // Show message
-        function showMessage(message, type = 'success') {
-            const successEl = document.getElementById('successMessage');
-            const errorEl = document.getElementById('errorMessage');
-            
-            if (type === 'success') {
-                successEl.textContent = message;
-                successEl.classList.remove('hidden');
-                errorEl.classList.add('hidden');
-            } else {
-                errorEl.textContent = message;
-                errorEl.classList.remove('hidden');
-                successEl.classList.add('hidden');
-            }
-            
-            setTimeout(() => {
-                successEl.classList.add('hidden');
-                errorEl.classList.add('hidden');
-            }, 5000);
-        }
-
-        // Load documents from Firestore
-        async function loadDocuments() {
-            try {
-                const snapshot = await db.collection('documents')
-                    .orderBy('timestamp', 'desc')
-                    .get();
-                
-                documentHistory = [];
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    documentHistory.push({
-                        id: doc.id,
-                        ...data
-                    });
-                });
-                
-                // Update counter
-                if (documentHistory.length > 0) {
-                    const numbers = documentHistory.map(doc => 
-                        parseInt(doc.number.split('/')[1]) || 0
-                    );
-                    documentCounter = Math.max(...numbers) + 1;
-                }
-                
-                updateHistoryTable();
-                updateStatistics();
-            } catch (error) {
-                console.error('Error loading documents:', error);
-                showMessage('เกิดข้อผิดพลาดในการโหลดข้อมูล', 'error');
-                loadFromLocalStorage();
-            }
-        }
-
-        // Fallback to localStorage
-        function loadFromLocalStorage() {
+        // Load data from localStorage
+        function loadData() {
             const saved = localStorage.getItem('documentHistory');
             if (saved) {
                 documentHistory = JSON.parse(saved);
                 documentCounter = documentHistory.length + 1;
                 updateHistoryTable();
                 updateStatistics();
-            } else {
-                updateHistoryTable();
-                updateStatistics();
             }
         }
 
-        // Save to Firestore
-        async function saveToFirestore(documentData) {
-            try {
-                await db.collection('documents').add(documentData);
-                return true;
-            } catch (error) {
-                console.error('Error saving to Firestore:', error);
-                return false;
-            }
-        }
-
-        // Save to localStorage as backup
-        function saveToLocalStorage() {
+        // Save data to localStorage
+        function saveData() {
             localStorage.setItem('documentHistory', JSON.stringify(documentHistory));
         }
 
@@ -785,50 +568,217 @@ const analytics = getAnalytics(app);
         });
 
         // Handle form submission
-        document.getElementById('documentForm').addEventListener('submit', async function(e) {
+        document.getElementById('documentForm').addEventListener('submit', function(e) {
             e.preventDefault();
             
-            const submitBtn = document.getElementById('submitBtn');
-            const originalText = submitBtn.innerHTML;
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData);
             
-            // Disable submit button
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<span class="loading"></span>กำลังบันทึก...';
+            // Validate required fields
+            const requester = data.requester.trim();
+            const from = data.from;
+            const to = data.to;
+            const subject = data.subject.trim();
             
-            try {
-                const formData = new FormData(this);
-                const data = Object.fromEntries(formData);
-                
-                // Validate required fields
-                const name = data.name.trim();
-                const from = data.from;
-                const to = data.to;
-                const topic = data.topic.trim();
-                
-                if (!name || !from || !to || !topic) {
-                    showMessage('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน', 'error');
-                    return;
-                }
-                
-                // Get sender and receiver
-                const sender = from === 'อื่นๆ' ? data.fromOther.trim() : from;
-                const receiver = to === 'หน่วยงานอื่น' ? data.toOther.trim() : to;
-                
-                // Validate other fields if selected
-                if (from === 'อื่นๆ' && !data.fromOther.trim()) {
-                    showMessage('กรุณาระบุผู้ส่ง', 'error');
-                    return;
-                }
-                
-                if (to === 'หน่วยงานอื่น' && !data.toOther.trim()) {
-                    showMessage('กรุณาระบุหน่วยงาน', 'error');
-                    return;
-                }
-                
-                // Generate document number and date
-                const documentNumber = `ศธ 04305.037/${String(documentCounter).padStart(4, '0')}`;
-                const currentDate = new Date();
-                const thaiDate = currentDate.toLocaleDateString('th-TH', {
-                    year: 'numeric',
-                    month: 'long',
-                    day: 'numeric'
+            if (!requester || !from || !to || !subject) {
+                alert('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
+                return;
+            }
+            
+            // Get sender and receiver
+            const sender = from === 'อื่นๆ' ? data.fromOther.trim() : from;
+            const receiver = to === 'หน่วยงานอื่น' ? data.toOther.trim() : to;
+            
+            // Validate other fields if selected
+            if (from === 'อื่นๆ' && !data.fromOther.trim()) {
+                alert('กรุณาระบุผู้ส่ง');
+                return;
+            }
+            
+            if (to === 'หน่วยงานอื่น' && !data.toOther.trim()) {
+                alert('กรุณาระบุหน่วยงาน');
+                return;
+            }
+            
+            // Generate document number and date
+            const documentNumber = `ศธ 04305.037/${String(documentCounter).padStart(4, '0')}`;
+            const currentDate = new Date();
+            const thaiDate = currentDate.toLocaleDateString('th-TH', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+            });
+            
+            // Create document record
+            const documentRecord = {
+                id: documentCounter,
+                number: documentNumber,
+                date: thaiDate,
+                requester: requester,
+                from: sender,
+                to: receiver,
+                subject: subject,
+                note: data.note || '-',
+                timestamp: currentDate.toISOString(),
+                year: currentYear
+            };
+            
+            // Add to history
+            documentHistory.unshift(documentRecord);
+            documentCounter++;
+            
+            // Save to localStorage
+            saveData();
+            
+            // Display result
+            displayResult(documentRecord);
+            
+            // Update history table and statistics
+            updateHistoryTable();
+            updateStatistics();
+            
+            // Reset form
+            this.reset();
+            document.getElementById('fromOtherGroup').classList.add('hidden');
+            document.getElementById('toOtherGroup').classList.add('hidden');
+            document.getElementById('fromOther').required = false;
+            document.getElementById('toOther').required = false;
+        });
+
+        function displayResult(record) {
+            const resultBox = document.getElementById('resultBox');
+            const resultContent = document.getElementById('resultContent');
+            const noResult = document.getElementById('noResult');
+            
+            resultContent.innerHTML = `
+                <div class="document-counter">เอกสารลำดับที่ ${record.id}</div>
+                <div class="result-item">
+                    <strong>เลขที่หนังสือ:</strong>
+                    <span>${record.number}</span>
+                </div>
+                <div class="result-item">
+                    <strong>วันที่:</strong>
+                    <span>${record.date}</span>
+                </div>
+                <div class="result-item">
+                    <strong>ชื่อผู้ขอ:</strong>
+                    <span>${record.requester}</span>
+                </div>
+                <div class="result-item">
+                    <strong>จาก:</strong>
+                    <span>${record.from}</span>
+                </div>
+                <div class="result-item">
+                    <strong>ถึง:</strong>
+                    <span>${record.to}</span>
+                </div>
+                <div class="result-item">
+                    <strong>เรื่อง:</strong>
+                    <span>${record.subject}</span>
+                </div>
+                <div class="result-item">
+                    <strong>หมายเหตุ:</strong>
+                    <span>${record.note}</span>
+                </div>
+            `;
+            
+            resultBox.classList.remove('hidden');
+            noResult.classList.add('hidden');
+        }
+
+        function updateHistoryTable() {
+            const historyTable = document.getElementById('historyTable');
+            
+            if (documentHistory.length === 0) {
+                historyTable.innerHTML = '<div class="empty-state"><p>ยังไม่มีการลงทะเบียนเอกสาร</p></div>';
+                return;
+            }
+            
+            let tableHTML = `
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>ลำดับ</th>
+                            <th>เลขที่หนังสือ</th>
+                            <th>วันที่</th>
+                            <th>ผู้ขอ</th>
+                            <th>จาก</th>
+                            <th>ถึง</th>
+                            <th>เรื่อง</th>
+                            <th>หมายเหตุ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            documentHistory.forEach((record, index) => {
+                tableHTML += `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td><strong>${record.number}</strong></td>
+                        <td>${record.date}</td>
+                        <td>${record.requester}</td>
+                        <td>${record.from}</td>
+                        <td>${record.to}</td>
+                        <td>${record.subject}</td>
+                        <td>${record.note}</td>
+                    </tr>
+                `;
+            });
+            
+            tableHTML += '</tbody></table>';
+            historyTable.innerHTML = tableHTML;
+        }
+
+        function updateStatistics() {
+            const totalDocuments = documentHistory.length;
+            const today = new Date().toDateString();
+            const todayDocuments = documentHistory.filter(doc => 
+                new Date(doc.timestamp).toDateString() === today
+            ).length;
+            
+            document.getElementById('totalDocuments').textContent = totalDocuments;
+            document.getElementById('todayDocuments').textContent = todayDocuments;
+        }
+
+        function downloadData() {
+            if (documentHistory.length === 0) {
+                alert('ไม่มีข้อมูลให้ดาวน์โหลด');
+                return;
+            }
+            
+            // Create CSV content
+            const headers = ['ลำดับ', 'เลขที่หนังสือ', 'วันที่', 'ผู้ขอ', 'จาก', 'ถึง', 'เรื่อง', 'หมายเหตุ'];
+            const csvContent = [
+                headers.join(','),
+                ...documentHistory.map((record, index) => [
+                    index + 1,
+                    `"${record.number}"`,
+                    `"${record.date}"`,
+                    `"${record.requester}"`,
+                    `"${record.from}"`,
+                    `"${record.to}"`,
+                    `"${record.subject}"`,
+                    `"${record.note}"`
+                ].join(','))
+            ].join('\n');
+            
+            // Add BOM for UTF-8 encoding
+            const csvBlob = new Blob(['\ufeff' + csvContent], { type: 'text/csv;charset=utf-8;' });
+            const csvUrl = URL.createObjectURL(csvBlob);
+            
+            // Create download link
+            const link = document.createElement('a');
+            link.href = csvUrl;
+            link.download = `เลขทะเบียนหนังสือ_${new Date().toISOString().split('T')[0]}.csv`;
+            link.click();
+            
+            // Clean up
+            URL.revokeObjectURL(csvUrl);
+        }
+
+        // Initialize on page load
+        window.addEventListener('DOMContentLoaded', loadData);
+    </script>
+</body>
+</html>
