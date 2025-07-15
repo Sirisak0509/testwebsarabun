@@ -349,6 +349,11 @@
             }
         }
     </style>
+    <!-- Firebase App (core SDK) -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<!-- Firebase Firestore -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js"></script>
+
 </head>
 <body>
     <div class="container">
@@ -466,6 +471,32 @@
     </div>
 
     <script>
+        // TODO: ใส่ config จาก Firebase Console
+const firebaseConfig = {
+  apiKey: "YOUR_API_KEY",
+  authDomain: "YOUR_PROJECT.firebaseapp.com",
+  projectId: "YOUR_PROJECT_ID",
+  storageBucket: "YOUR_PROJECT.appspot.com",
+  messagingSenderId: "XXXXXX",
+  appId: "XXXXXX"
+};
+
+window.onload = function () {
+  db.collection("documents").orderBy("timestamp", "desc").get().then(snapshot => {
+    snapshot.forEach(doc => {
+      const data = doc.data();
+      data.timestamp = data.timestamp.toDate(); // แปลง Timestamp
+      documentHistory.push(data);
+    });
+    updateHistoryTable();
+    updateYearTabs();
+    updateStatistics();
+  });
+};
+// Initialize Firebase
+firebase.initializeApp(firebaseConfig);
+const db = firebase.firestore();
+
         let documentCounter = {};
         let documentHistory = [];
         const currentYear = 2568; // พ.ศ. 2568
@@ -534,6 +565,25 @@
                 timestamp: new Date(),
                 year: docYear
             };
+            // ใน handleForm submit, หลังสร้าง documentRecord:
+db.collection("documents").add(documentRecord)
+  .then(() => {
+    // แสดงผลหลังบันทึกเสร็จ
+    documentHistory.unshift(documentRecord); // optional ถ้าโหลดใหม่หลังบันทึก
+    displayResult(documentRecord);
+    updateHistoryTable();
+    updateYearTabs();
+    updateStatistics();
+    document.getElementById('documentForm').reset();
+    document.getElementById('fromOtherGroup').classList.add('hidden');
+    document.getElementById('toOtherGroup').classList.add('hidden');
+    document.getElementById('fromOther').required = false;
+    document.getElementById('toOther').required = false;
+  })
+  .catch(error => {
+    alert('เกิดข้อผิดพลาดในการบันทึก: ' + error.message);
+  });
+
             
             // Add to history
             documentHistory.unshift(documentRecord);
