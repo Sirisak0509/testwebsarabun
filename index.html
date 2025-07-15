@@ -529,60 +529,62 @@ const db = firebase.firestore();
         });
 
         // Handle form submission
-        document.getElementById('documentForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const formData = new FormData(this);
-            const data = Object.fromEntries(formData);
-            
-            // Generate document number and date
-            const docYear = currentYear;
-            if (!documentCounter[docYear]) {
-                documentCounter[docYear] = 0;
-            }
-            documentCounter[docYear]++;
-            const documentNumber = `ศธ 04305.037/${documentCounter[docYear]}`;
-            const currentDate = new Date().toLocaleDateString('th-TH', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric'
-            });
-            
-            // Determine sender and receiver
-            const sender = data.from === 'อื่นๆ' ? data.fromOther : data.from;
-            const receiver = data.to === 'หน่วยงานอื่น' ? data.toOther : data.to;
-            
-            // Create document record
-            const documentRecord = {
-                id: documentCounter[docYear],
-                number: documentNumber,
-                date: currentDate,
-                requester: data.requester,
-                from: sender,
-                to: receiver,
-                subject: data.subject,
-                note: data.note || '-',
-                timestamp: new Date(),
-                year: docYear
-            };
-            // ใน handleForm submit, หลังสร้าง documentRecord:
-db.collection("documents").add(documentRecord)
-  .then(() => {
-    // แสดงผลหลังบันทึกเสร็จ
-    documentHistory.unshift(documentRecord); // optional ถ้าโหลดใหม่หลังบันทึก
-    displayResult(documentRecord);
-    updateHistoryTable();
-    updateYearTabs();
-    updateStatistics();
-    document.getElementById('documentForm').reset();
-    document.getElementById('fromOtherGroup').classList.add('hidden');
-    document.getElementById('toOtherGroup').classList.add('hidden');
-    document.getElementById('fromOther').required = false;
-    document.getElementById('toOther').required = false;
-  })
-  .catch(error => {
-    alert('เกิดข้อผิดพลาดในการบันทึก: ' + error.message);
-  });
+     document.getElementById('documentForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData);
+
+    const sender = data.from === 'อื่นๆ' ? data.fromOther : data.from;
+    const receiver = data.to === 'หน่วยงานอื่น' ? data.toOther : data.to;
+
+    const docYear = currentYear;
+    const currentDate = new Date().toLocaleDateString('th-TH', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+    });
+
+    const timestamp = new Date();
+
+    try {
+        const docRef = await db.collection('documents').add({
+            year: docYear,
+            subject: data.subject,
+            from: sender,
+            to: receiver,
+            requester: data.requester,
+            note: data.note || '-',
+            date: currentDate,
+            timestamp: timestamp
+        });
+
+        const documentNumber = `ศธ 04305.037/${docRef.id.slice(0, 6)}`;
+
+        const record = {
+            id: docRef.id,
+            number: documentNumber,
+            date: currentDate,
+            subject: data.subject,
+            from: sender,
+            to: receiver,
+            requester: data.requester,
+            note: data.note || '-',
+            timestamp,
+            year: docYear
+        };
+
+        displayResult(record);
+        await loadHistory(); // โหลดข้อมูลใหม่หลังบันทึก
+        this.reset();
+        document.getElementById('fromOtherGroup').classList.add('hidden');
+        document.getElementById('toOtherGroup').classList.add('hidden');
+
+    } catch (error) {
+        alert("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+        console.error("Error adding document: ", error);
+    }
+});
 
             
             // Add to history
